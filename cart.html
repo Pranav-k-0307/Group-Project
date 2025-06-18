@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart | IndiThreads</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">IndiThreads</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#collection">Collection</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="cart">
+        <h2>Your Shopping Cart</h2>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <div class="cart-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-details">
+                <p>Subtotal: <span id="subtotal">₹0</span></p>
+                <p>Shipping: <span id="shipping">₹50</span></p>
+                <p>Tax (5%): <span id="tax">₹0</span></p>
+                <p>Total: <span id="total">₹50</span></p>
+            </div>
+            <button id="checkout-btn">Proceed to Checkout</button>
+        </div>
+    </section>
+
+    <section id="checkout" style="display: none;">
+        <h2>Checkout</h2>
+        <form id="checkout-form">
+            <h3>Shipping Information</h3>
+            <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" rows="3" required></textarea>
+            </div>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" required>
+                </div>
+            </div>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="pincode">PIN Code</label>
+                    <input type="text" id="pincode" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+            </div>
+
+            <h3>Payment Method</h3>
+            <div class="payment-methods">
+                <div class="payment-option">
+                    <input type="radio" id="upi" name="payment" value="upi" checked>
+                    <label for="upi">UPI Payment</label>
+                    <div id="upi-details">
+                        <div class="form-group">
+                            <label for="upi-id">UPI ID</label>
+                            <input type="text" id="upi-id" placeholder="yourname@upi">
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" id="netbanking" name="payment" value="netbanking">
+                    <label for="netbanking">Net Banking</label>
+                    <div id="netbanking-details" style="display: none;">
+                        <div class="form-group">
+                            <label for="bank">Select Bank</label>
+                            <select id="bank">
+                                <option value="sbi">State Bank of India</option>
+                                <option value="hdfc">HDFC Bank</option>
+                                <option value="icici">ICICI Bank</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" id="credit-card" name="payment" value="credit-card">
+                    <label for="credit-card">Credit/Debit Card</label>
+                    <div id="credit-card-details" style="display: none;">
+                        <div class="form-group">
+                            <label for="card-number">Card Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-name">Name on Card</label>
+                            <input type="text" id="card-name">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label for="expiry">Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY">
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" id="cod" name="payment" value="cod">
+                    <label for="cod">Cash on Delivery (COD)</label>
+                    <div id="cod-details" style="display: none;">
+                        <p>Pay when your order is delivered</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="place-order-btn">Place Order</button>
+        </form>
+    </section>
+
+    <section id="order-confirmation" style="display: none;">
+        <h2>Order Confirmation</h2>
+        <div class="confirmation-message">
+            <p>Thank you for your order!</p>
+            <p>Your order number is: <span id="order-number">123456</span></p>
+            <a href="index.html" class="btn">Continue Shopping</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 IndiThreads. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = document.getElementById('cart-count');
+            
+            function updateCartCount() {
+                const count = cart.reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = count;
+            }
+            
+            function renderCartItems() {
+                const cartItemsContainer = document.getElementById('cart-items');
+                const subtotalElement = document.getElementById('subtotal');
+                const taxElement = document.getElementById('tax');
+                const totalElement = document.getElementById('total');
+                
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                    subtotalElement.textContent = '₹0';
+                    taxElement.textContent = '₹0';
+                    totalElement.textContent = '₹50';
+                    document.getElementById('checkout-btn').disabled = true;
+                    return;
+                }
+                
+                let subtotal = 0;
+                cartItemsContainer.innerHTML = '';
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'cart-item';
+                    itemElement.innerHTML = `
+                        <div class="item-info">
+                            <h4>${item.name}</h4>
+                            <p>₹${item.price}</p>
+                        </div>
+                        <div class="item-quantity">
+                            <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                        </div>
+                        <div class="item-total">
+                            ₹${itemTotal}
+                        </div>
+                        <button class="remove-item" data-id="${item.id}">×</button>
+                    `;
+                    
+                    cartItemsContainer.appendChild(itemElement);
+                });
+                
+                const shipping = 50;
+                const tax = subtotal * 0.05;
+                const total = subtotal + shipping + tax;
+                
+                subtotalElement.textContent = `₹${subtotal}`;
+                taxElement.textContent = `₹${tax}`;
+                totalElement.textContent = `₹${total}`;
+                
+                // Quantity buttons
+                document.querySelectorAll('.quantity-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        const action = this.getAttribute('data-action');
+                        const item = cart.find(item => item.id === id);
+                        
+                        if (action === 'increase') {
+                            item.quantity += 1;
+                        } else if (action === 'decrease' && item.quantity > 1) {
+                            item.quantity -= 1;
+                        }
+                        
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        renderCartItems();
+                        updateCartCount();
+                    });
+                });
+                
+                // Remove buttons
+                document.querySelectorAll('.remove-item').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        cart = cart.filter(item => item.id !== id);
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        renderCartItems();
+                        updateCartCount();
+                    });
+                });
+            }
+            
+            // Payment method toggle
+            document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('upi-details').style.display = 'none';
+                    document.getElementById('netbanking-details').style.display = 'none';
+                    document.getElementById('credit-card-details').style.display = 'none';
+                    document.getElementById('cod-details').style.display = 'none';
+                    
+                    document.getElementById(`${this.value}-details`).style.display = 'block';
+                });
+            });
+            
+            // Checkout button
+            document.getElementById('checkout-btn').addEventListener('click', function() {
+                document.getElementById('cart').style.display = 'none';
+                document.getElementById('checkout').style.display = 'block';
+            });
+            
+            // Form submission
+            document.getElementById('checkout-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Save order
+                const order = {
+                    items: cart,
+                    shipping: {
+                        name: document.getElementById('full-name').value,
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        pincode: document.getElementById('pincode').value,
+                        phone: document.getElementById('phone').value
+                    },
+                    payment: document.querySelector('input[name="payment"]:checked').value,
+                    orderNumber: Math.floor(Math.random() * 900000) + 100000
+                };
+                
+                // Clear cart
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                
+                // Show confirmation
+                document.getElementById('checkout').style.display = 'none';
+                document.getElementById('order-confirmation').style.display = 'block';
+                document.getElementById('order-number').textContent = order.orderNumber;
+            });
+            
+            // Initialize
+            updateCartCount();
+            renderCartItems();
+        });
+    </script>
+</body>
+</html>

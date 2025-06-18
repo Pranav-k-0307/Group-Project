@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IndiThreads | Western Apparel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">IndiThreads</div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#collection">Collection</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content">
+            <h1>Discover Timeless Western Wear</h1>
+            <p>Modern classics designed for comfort and style. Explore our curated collection of everyday essentials.</p>
+            <a href="#collection" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <section id="collection">
+        <h2>Featured Collection</h2>
+        <div class="products">
+            <div class="product-card">
+                <img src="knit-sweater.jpg" alt="Classic Knit Sweater">
+                <h3>Classic Knit Sweater</h3>
+                <p>Soft, cozy, and perfect for any season.</p>
+                <span class="price">₹1,299</span>
+                <button class="add-to-cart" data-id="1" data-name="Classic Knit Sweater" data-price="1299">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="shirt.jpg" alt="Casual Linen Shirt">
+                <h3>Casual Linen Shirt</h3>
+                <p>Lightweight and breathable for all-day comfort.</p>
+                <span class="price">₹999</span>
+                <button class="add-to-cart" data-id="2" data-name="Casual Linen Shirt" data-price="999">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="patterned-scarf.jpg" alt="Soft Patterned Scarf">
+                <h3>Soft Patterned Scarf</h3>
+                <p>Add a touch of color to your outfit.</p>
+                <span class="price">₹499</span>
+                <button class="add-to-cart" data-id="3" data-name="Soft Patterned Scarf" data-price="499">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="wide-leg-pants.webp" alt="Relaxed Fit Pants">
+                <h3>Relaxed Fit Pants</h3>
+                <p>Effortless style and everyday ease.</p>
+                <span class="price">₹1,199</span>
+                <button class="add-to-cart" data-id="4" data-name="Relaxed Fit Pants" data-price="1199">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="midi-dress.webp" alt="Floral Midi Dress">
+                <h3>Floral Midi Dress</h3>
+                <p>Chic and versatile for any occasion.</p>
+                <span class="price">₹1,599</span>
+                <button class="add-to-cart" data-id="5" data-name="Floral Midi Dress" data-price="1599">Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <img src="tote-bag.webp" alt="Canvas Tote Bag">
+                <h3>Canvas Tote Bag</h3>
+                <p>Carry your essentials in style.</p>
+                <span class="price">₹699</span>
+                <button class="add-to-cart" data-id="6" data-name="Canvas Tote Bag" data-price="699">Add to Cart</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2>About IndiThreads</h2>
+        <p>
+            IndiThreads brings you a curated selection of modern western wear, blending timeless designs with premium fabrics. Our mission is to make everyday dressing effortless and elegant.
+        </p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+            
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 IndiThreads. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = document.getElementById('cart-count');
+            
+            function updateCartCount() {
+                const count = cart.reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = count;
+            }
+            
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const price = parseFloat(this.getAttribute('data-price'));
+                    
+                    const existingItem = cart.find(item => item.id === id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({
+                            id,
+                            name,
+                            price,
+                            quantity: 1
+                        });
+                    }
+                    
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartCount();
+                    alert(`${name} added to cart!`);
+                });
+            });
+            
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
